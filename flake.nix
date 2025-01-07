@@ -23,14 +23,20 @@
     in
 
     {
+      packages = eachSystem (
+        system: pkgs: {
+          default = pkgs.writers.writeBashBin "hand-wave" ''
+            exec ${pkgs.presenterm}/bin/presenterm ${./README.md}
+          '';
+        }
+      );
+
       devShell = eachSystem (
         system: pkgs:
         pkgs.mkShell {
           packages = [
-            (pkgs.presenterm)
-            (pkgs.writeScriptBin "hand-wave" ''
-              exec presenterm README.md
-            '')
+            pkgs.presenterm
+            self.packages.${system}.default
           ];
         }
       );
